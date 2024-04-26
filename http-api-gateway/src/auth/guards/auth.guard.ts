@@ -6,7 +6,7 @@ import {
   //   UnauthorizedException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { Observable, lastValueFrom } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { Request } from 'express';
 
 @Injectable()
@@ -15,21 +15,19 @@ export class AuthGuard implements CanActivate {
 
   constructor(@Inject('NATS_SERVICE') private natsClient: ClientProxy) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractJWTFromCookie(request);
 
     if (!token) return false;
 
     // check if token is valid
-    const user = lastValueFrom(
-      this.natsClient.send({ cmd: 'validateToken' }, { token }),
+    const reponse = await lastValueFrom(
+      this.natsClient.send({ cmd: 'validateToken' }, token),
     );
 
-    if (user) {
-      request['user'] = user;
+    if (reponse.user) {
+      request['user'] = reponse.user;
       return true;
     }
 

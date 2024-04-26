@@ -11,6 +11,16 @@ export interface User {
 
   // setter for password
   password: string;
+
+  passwordToken: string | null;
+
+  passwordTokenExpiration: Date | null;
+
+  isVerified: boolean;
+
+  verificationToken: string | null;
+
+  verified: Date;
 }
 
 export interface Patient extends User {

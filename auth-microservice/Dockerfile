@@ -1,10 +1,20 @@
-FROM node:20
+# Stage 1
+FROM node:18.17-alpine as base
 
-WORKDIR /usr/src/app
+
+WORKDIR /app
 
 COPY package.json ./
-COPY package-lock.json ./
 
-RUN npm install
+RUN npm install 
+# --omit=dev
 
 COPY . .
+
+# Stage 2
+# FROM gcr.io/distroless/nodejs18-debian11
+
+# WORKDIR /app
+# COPY --from=base . .
+
+# USER nonroot

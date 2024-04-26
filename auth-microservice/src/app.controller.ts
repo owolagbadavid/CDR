@@ -1,6 +1,9 @@
 import { Controller } from '@nestjs/common';
 import { AppService } from './app.service';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+import {
+  /*EventPattern , */ MessagePattern,
+  Payload,
+} from '@nestjs/microservices';
 
 @Controller()
 export class AppController {
@@ -11,23 +14,28 @@ export class AppController {
     return this.appService.validateToken(token);
   }
 
-  @EventPattern({ cmd: 'registerPatient' })
+  @MessagePattern({ cmd: 'registerPatient' })
   registerUser(@Payload() data: any) {
     return this.appService.registerPatient(data);
   }
 
-  @EventPattern({ cmd: 'loginPatient' })
+  @MessagePattern({ cmd: 'loginPatient' })
   loginUser(@Payload() data: any) {
     return this.appService.loginPatient(data);
   }
 
-  @EventPattern({ cmd: 'registerPersonnel' })
+  @MessagePattern({ cmd: 'registerPersonnel' })
   registerPersonnel(@Payload() data: any) {
     return this.appService.registerPersonnel(data);
   }
 
-  @EventPattern({ cmd: 'loginPersonnel' })
+  @MessagePattern({ cmd: 'loginPersonnel' })
   loginPersonnel(@Payload() data: any) {
     return this.appService.loginPersonnel(data);
+  }
+
+  @MessagePattern({ cmd: 'resetPassword' })
+  resetPassword(@Payload() data: any) {
+    return this.appService.resetPassword(data);
   }
 }

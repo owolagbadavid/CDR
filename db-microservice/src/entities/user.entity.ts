@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 @Entity()
 export class User {
   @Column({ name: 'first_name' })
-  firtstName: string;
+  firstName: string;
 
   @Column({ name: 'last_name' })
   lastName: string;
@@ -14,8 +14,23 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ name: 'password_hash' })
+  @Column({ name: 'password_hash', nullable: true })
   passwordHash: string;
+
+  @Column({ nullable: true, name: 'password_token' })
+  passwordToken: string | null;
+
+  @Column({ nullable: true, name: 'password_token_expiration' })
+  passwordTokenExpiration: Date | null;
+
+  @Column({ default: false, type: 'boolean' })
+  isVerified: boolean;
+
+  @Column({ nullable: true, name: 'verification_token' })
+  verificationToken: string | null;
+
+  @Column({ nullable: true })
+  verified: Date;
 
   //setter for password
   set password(password: string) {
@@ -25,15 +40,17 @@ export class User {
   }
 }
 
+@Entity()
 export class Patient extends User {
-  @PrimaryGeneratedColumn({ name: 'patient_id' })
+  @PrimaryGeneratedColumn('uuid', { name: 'patient_id' })
   patientId: number;
 
   @Column({ name: 'date_of_birth' })
   dateOfBirth: Date;
 }
 
+@Entity()
 export class Personnel extends User {
-  @PrimaryGeneratedColumn({ name: 'personnel_id' })
+  @PrimaryGeneratedColumn('uuid', { name: 'personnel_id' })
   personnelId: number;
 }

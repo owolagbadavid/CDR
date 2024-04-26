@@ -4,20 +4,26 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./http-api-gateway/src:/usr/src/app/src
+      - ./http-api-gateway/src:/app/src
     command: npm run start:dev
     environment:
       - PORT=3000
+    env_file:
+      - .env
   db_microservice:
     build: ./db-microservice
     volumes:
-      - ./db-microservice/src:/usr/src/app/src
+      - ./db-microservice/src:/app/src
     command: npm run start:dev
+    env_file:
+      - .env
   auth_microservice:
     build: ./auth-microservice
     volumes:
-      - ./auth-microservice/src:/usr/src/app/src
+      - ./auth-microservice/src:/app/src
     command: npm run start:dev
+    env_file:
+      - .env
   nats:
     image: nats
     ports:
