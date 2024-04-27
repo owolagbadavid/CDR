@@ -1,9 +1,11 @@
 import {
   // Body,
   Controller,
+  Delete,
   Get,
+  HttpException,
   Inject,
-  NotFoundException,
+  // NotFoundException,
   Param,
   // Post,
 } from '@nestjs/common';
@@ -15,13 +17,34 @@ import { lastValueFrom } from 'rxjs';
 export class UsersController {
   constructor(@Inject('NATS_SERVICE') private natsClient: ClientProxy) {}
 
-  @Get(':id')
+  @Get('patients/:id')
   async getUserById(@Param('id') id: string) {
-    const user = await lastValueFrom(
-      this.natsClient.send({ cmd: 'getUserById' }, { userId: id }),
+    const response = await lastValueFrom(
+      this.natsClient.send({ cmd: 'getPatientById' }, id),
     );
 
-    if (user) return user;
-    throw new NotFoundException('User Not Found!');
+    if (response.error) throw new HttpException(response, response.statusCode);
+    return response;
+  }
+
+  @Get('personnel/:id')
+  async getPersonnelById(@Param('id') id: string) {
+    const response = await lastValueFrom(
+      this.natsClient.send({ cmd: 'getPersonnelById' }, id),
+    );
+
+    if (response.error)
+      throw new HttpException(response.error, response.statusCode);
+    return response;
+  }
+
+  @Delete('patients')
+  async deleteAllPatients() {
+    return this.natsClient.send({ cmd: 'deleteAllPatients' }, {});
+  }
+
+  @Delete('personnel')
+  async deleteAllPersonnel() {
+    return this.natsClient.send({ cmd: 'deleteAllPersonnel' }, {});
   }
 }

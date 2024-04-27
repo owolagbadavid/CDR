@@ -1,13 +1,14 @@
 import {
   Body,
-  ConflictException,
+  // ConflictException,
   Controller,
   Delete,
+  HttpException,
   HttpStatus,
   Inject,
   Post,
   Res,
-  UnauthorizedException,
+  // UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -40,14 +41,10 @@ export class AuthController {
     );
 
     if (response.error) {
-      throw new ConflictException(response.error);
+      throw new HttpException(response.error, response.statusCode);
     }
 
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Personnel registered successfully',
-      data: response,
-    };
+    return response;
   }
 
   @Post('patientLogin')
@@ -56,12 +53,15 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     console.log(loginDto);
-    const { token, user } = await lastValueFrom(
+    const response = await lastValueFrom(
       this.natsClient.send({ cmd: 'loginPatient' }, loginDto),
     );
 
-    console.log(token, user);
-    if (!token) throw new UnauthorizedException('Invalid credentials');
+    if (response.error) {
+      throw new HttpException(response.error, response.statusCode);
+    }
+
+    const { token, user } = response.data;
 
     const longerExp = 1000 * 60 * 60; // 2 hours
     //!change to '1800s'
@@ -88,14 +88,10 @@ export class AuthController {
     );
 
     if (response.error) {
-      throw new ConflictException(response.error);
+      throw new HttpException(response.error, response.statusCode);
     }
 
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Personnel registered successfully',
-      data: response,
-    };
+    return response;
   }
 
   @Post('personnelLogin')
@@ -108,9 +104,9 @@ export class AuthController {
       this.natsClient.send({ cmd: 'loginPersonnel' }, loginDto),
     );
 
-    if (!result) throw new UnauthorizedException('Invalid credentials');
+    if (result.error) throw new HttpException(result.error, result.statusCode);
 
-    const { token, user } = result;
+    const { token, user } = result.data;
     console.log(token, user);
 
     const longerExp = 1000 * 60 * 60; // 2 hours

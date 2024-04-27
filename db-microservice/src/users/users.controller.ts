@@ -24,7 +24,7 @@ export class UsersController {
   }
 
   @MessagePattern({ cmd: 'findUserById' })
-  findUserById(@Payload() userId: number) {
+  findUserById(@Payload() userId: string) {
     return this.usersService.findUserById(userId);
   }
 
@@ -38,8 +38,32 @@ export class UsersController {
     return this.usersService.findUserByEmail(email);
   }
 
+  @MessagePattern({ cmd: 'getPatientById' })
+  getPatientById(@Payload() id: string) {
+    return this.usersService.getPatientById(id);
+  }
+
+  @MessagePattern({ cmd: 'getPersonnelById' })
+  getPersonnelById(@Payload() id: string) {
+    return this.usersService.getPersonnelById(id);
+  }
+
   @MessagePattern({ cmd: 'updateUser' })
   updateUser(@Payload() data: any) {
     return this.usersService.updateUser(data);
+  }
+
+  @MessagePattern({ cmd: 'deleteAllPatients' })
+  async deleteAllPatients() {
+    console.log('deleteAllPatients');
+    await this.usersService.deleteAllPatients();
+    return { message: 'All patients deleted successfully' };
+  }
+
+  @MessagePattern({ cmd: 'deleteAllPersonnel' })
+  async deleteAllPersonnel() {
+    console.log('deleteAllPersonnel');
+    await this.usersService.deleteAllPersonnel();
+    return { message: 'All personnel deleted successfully' };
   }
 }

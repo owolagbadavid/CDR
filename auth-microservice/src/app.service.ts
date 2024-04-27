@@ -44,44 +44,111 @@ export class AppService {
   }
 
   async registerPatient(data: any) {
-    const patient = await lastValueFrom(
+    const response = await lastValueFrom(
       this.natsClient.send({ cmd: 'createPatient' }, data),
     );
 
+    if (response.error) {
+      return response;
+    }
+    console.log('response', response);
+    response.data = (({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      passwordHash,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      passwordToken,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      passwordTokenExpiration,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      verificationToken,
+      ...rest
+    }) => rest)(response.data);
+
     //todo: send email to patient
-    return patient;
+    return response;
   }
 
   async loginPatient(data) {
-    const user: Patient = await lastValueFrom(
+    let user: Patient = await lastValueFrom(
       this.natsClient.send({ cmd: 'findPatientByEmail' }, data.email),
     );
 
-    console.log('user', user);
     if (user) {
+      user = (({
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        passwordHash,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        passwordToken,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        passwordTokenExpiration,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        verificationToken,
+        ...rest
+      }) => rest)(user);
       if (bcrypt.compareSync(data.password, user.passwordHash)) {
         const token = await this.signToken(user.patientId, user.email);
-        return { user, token };
+        return {
+          message: 'Login Successful',
+          data: { user, token },
+          statusCode: 201,
+        };
       }
     }
-    return null;
+    return { error: 'Invalid credentials', statusCode: 401 };
   }
 
   async registerPersonnel(data: any) {
-    return this.natsClient.send({ cmd: 'createPersonnel' }, data);
+    const response = await lastValueFrom(
+      this.natsClient.send({ cmd: 'createPersonnel' }, data),
+    );
+
+    if (response.error) {
+      return response;
+    }
+
+    response.data = (({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      passwordHash,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      passwordToken,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      passwordTokenExpiration,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      verificationToken,
+      ...rest
+    }) => rest)(response.data);
+
+    return response;
   }
 
   async loginPersonnel(data) {
-    const user: Personnel = await lastValueFrom(
+    let user: Personnel = await lastValueFrom(
       this.natsClient.send({ cmd: 'findPersonnelByEmail' }, data.email),
     );
     if (user) {
+      console.log('user', user);
       if (bcrypt.compareSync(data.password, user.passwordHash)) {
         const token = await this.signToken(user.personnelId, user.email);
-        return { user, token };
+        user = (({
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          passwordHash,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          passwordToken,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          passwordTokenExpiration,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          verificationToken,
+          ...rest
+        }) => rest)(user);
+
+        return {
+          message: 'Login Successful',
+          data: { user, token },
+          statusCode: 201,
+        };
       }
     }
-    return null;
+    return { error: 'Invalid credentials', statusCode: 401 };
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {

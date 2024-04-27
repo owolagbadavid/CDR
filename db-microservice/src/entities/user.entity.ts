@@ -43,7 +43,7 @@ export class User {
 @Entity()
 export class Patient extends User {
   @PrimaryGeneratedColumn('uuid', { name: 'patient_id' })
-  patientId: number;
+  patientId: string;
 
   @Column({ name: 'date_of_birth' })
   dateOfBirth: Date;
@@ -52,5 +52,5 @@ export class Patient extends User {
 @Entity()
 export class Personnel extends User {
   @PrimaryGeneratedColumn('uuid', { name: 'personnel_id' })
-  personnelId: number;
+  personnelId: string;
 }

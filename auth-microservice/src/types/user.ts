@@ -7,18 +7,18 @@ export interface User {
 
   email: string;
 
-  passwordHash: string;
+  passwordHash?: string;
 
   // setter for password
-  password: string;
+  password?: string;
 
-  passwordToken: string | null;
+  passwordToken?: string | null;
 
-  passwordTokenExpiration: Date | null;
+  passwordTokenExpiration?: Date | null;
 
   isVerified: boolean;
 
-  verificationToken: string | null;
+  verificationToken?: string | null;
 
   verified: Date;
 }

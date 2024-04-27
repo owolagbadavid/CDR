@@ -27,7 +27,12 @@ export class UsersService {
       verificationToken,
     });
 
-    return this.patientRepo.save(patient);
+    await this.patientRepo.save(patient);
+    return {
+      message: 'Personnel registered successfully',
+      data: patient,
+      statusCode: 201,
+    };
   }
 
   async createPersonnel(createPersonnelDto: CreatePersonnelDto) {
@@ -43,10 +48,15 @@ export class UsersService {
 
     const details = { isVerified, verified };
     createPersonnelDto = { ...createPersonnelDto, ...details };
-    const personnel = this.personnelRepo.create(createPersonnelDto);
+    let personnel = this.personnelRepo.create(createPersonnelDto);
     personnel.password = createPersonnelDto.password;
     console.log(personnel, 'personnel.passwordHash');
-    return this.personnelRepo.save(personnel);
+    personnel = await this.personnelRepo.save(personnel);
+    return {
+      message: 'Personnel registered successfully',
+      data: personnel,
+      statusCode: 201,
+    };
   }
 
   findPatientByEmail(email: string) {
@@ -57,20 +67,24 @@ export class UsersService {
     return this.personnelRepo.findOneBy({ email });
   }
 
-  async findUserById(userId: number) {
-    const patient = await this.patientRepo.findOneBy({ patientId: userId });
-    if (patient)
-      return {
-        message: 'User found',
-        user: patient,
-      };
-    const personnel = await this.personnelRepo.findOneBy({
-      personnelId: userId,
-    });
+  async findUserById(userId: string) {
+    try {
+      const patient = await this.patientRepo.findOneBy({ patientId: userId });
+      if (patient)
+        return {
+          message: 'User found',
+          user: patient,
+        };
+      const personnel = await this.personnelRepo.findOneBy({
+        personnelId: userId,
+      });
 
-    if (personnel) return { message: 'User found', user: personnel };
+      if (personnel) return { message: 'User found', user: personnel };
 
-    return { error: 'User not found' };
+      return { error: 'User not found', statusCode: 404 };
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async findUserByEmail(email: string) {
@@ -84,15 +98,44 @@ export class UsersService {
 
     if (personnel) return { message: 'User found', user: personnel };
 
-    return { error: 'User not found' };
+    return { error: 'User not found', statusCode: 404 };
+  }
+
+  async getPatientById(id: string) {
+    try {
+      const patient = await this.patientRepo.findOneBy({ patientId: id });
+      if (patient)
+        return { message: 'User found', user: patient, statusCode: 200 };
+      return { error: 'User not found', statusCode: 404 };
+    } catch (error) {
+      console.log(error.code);
+      if (error.code === '22P02') {
+        return { error: 'Invalid uuid', statusCode: 400 };
+      }
+    }
+  }
+
+  async getPersonnelById(id: string) {
+    try {
+      const personnel = await this.personnelRepo.findOneBy({ personnelId: id });
+      if (personnel)
+        return { message: 'User found', user: personnel, statusCode: 200 };
+      return { error: 'User not found', statusCode: 404 };
+    } catch (error) {
+      console.log(error.code);
+      if (error.code === '22P02') {
+        return { error: 'Invalid uuid', mstatusCode: 400 };
+      }
+    }
   }
 
   async updateUser(data: any) {
-    const patient = await this.patientRepo.findOneBy({
-      patientId: data.patientId,
-    });
+    const patientResponse = await this.getPatientById(data.patientId);
 
-    console.log('patient', patient, data, 'data');
+    if (patientResponse.error) return patientResponse;
+
+    const patient = patientResponse.user;
+
     if (patient) {
       const updatedPatient = await this.patientRepo.save({
         ...patient,
@@ -101,9 +144,12 @@ export class UsersService {
       return { message: 'User updated', user: updatedPatient };
     }
 
-    const personnel = await this.personnelRepo.findOneBy({
-      personnelId: data.personnelId,
-    });
+    const personnelResponse = await this.getPersonnelById(data.personnelId);
+
+    if (personnelResponse.error) return personnelResponse;
+
+    const personnel = personnelResponse.user;
+
     if (personnel) {
       const updatedPersonnel = await this.personnelRepo.save({
         ...personnel,
@@ -113,5 +159,13 @@ export class UsersService {
     }
 
     return { error: 'User not found', statusCode: 404 };
+  }
+
+  async deleteAllPatients() {
+    return this.patientRepo.clear();
+  }
+
+  async deleteAllPersonnel() {
+    return this.personnelRepo.clear();
   }
 }
