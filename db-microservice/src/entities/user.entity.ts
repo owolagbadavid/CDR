@@ -1,7 +1,14 @@
 // Base User Entity
 
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Facility } from './facility.entity';
 
 @Entity()
 export class User {
@@ -40,7 +47,7 @@ export class User {
   }
 }
 
-@Entity()
+@Entity({ name: 'patients' })
 export class Patient extends User {
   @PrimaryGeneratedColumn('uuid', { name: 'patient_id' })
   patientId: string;
@@ -49,8 +56,26 @@ export class Patient extends User {
   dateOfBirth: Date;
 }
 
+// enum for personnel type
+export enum PersonnelType {
+  DOCTOR = 'doctor',
+  NURSE = 'nurse',
+  PHARMACIST = 'pharmacist',
+  LAB_TECH = 'lab_tech',
+  OTHER = 'other',
+}
+
 @Entity()
 export class Personnel extends User {
   @PrimaryGeneratedColumn('uuid', { name: 'personnel_id' })
   personnelId: string;
+
+  @ManyToOne('Facility', 'personnel')
+  facility: Facility;
+
+  @JoinColumn({ name: 'facility_id' })
+  facilityId: string;
+
+  @Column({ type: 'enum', enum: PersonnelType, default: PersonnelType.OTHER })
+  type: PersonnelType;
 }
