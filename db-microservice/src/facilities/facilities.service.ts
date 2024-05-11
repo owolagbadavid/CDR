@@ -4,11 +4,13 @@ import { CreateFacilityDto } from './dto/create-facility.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Facility } from 'src/entities/facility.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class FacilitiesService {
   constructor(
     @InjectRepository(Facility) private facilityRepo: Repository<Facility>,
+    private usersService: UsersService,
   ) {}
   async create(createFacilityDto: CreateFacilityDto) {
     const emailAlreadyExists = await this.facilityRepo.findOneBy({
@@ -81,23 +83,11 @@ export class FacilitiesService {
     };
   }
 
-  async getAllStaff(facilityId: number, filter) {
-    const facility = await this.facilityRepo.findOneBy({ facilityId });
-
-    if (!facility) {
-      return {
-        statusCode: 404,
-        error: 'Facility not found',
-      };
-    }
-
-    console.log(filter);
-    // todo: implement filter logic OR use a query builder in another function to filter the personnel on the personnel repo
-
-    return {
-      statusCode: 200,
-      message: 'Staff retrieved successfully',
-      data: facility.personnel,
+  getAllStaff(facilityId: number, filter) {
+    const query = {
+      facilityId,
+      ...filter,
     };
+    return this.usersService.getAllPersonnel(query);
   }
 }

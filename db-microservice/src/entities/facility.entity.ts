@@ -1,5 +1,6 @@
 import {
   Column,
+  Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -16,6 +17,7 @@ export enum FacilityType {
   OTHER = 'other',
 }
 
+@Entity('facilities')
 export class Facility {
   // unique identifier
   @PrimaryGeneratedColumn({ name: 'facility_id' })

@@ -31,7 +31,7 @@ export class User {
   @Column({ nullable: true })
   gender: string;
 
-  @Column({ name: 'date_of_birth' })
+  @Column({ name: 'date_of_birth', nullable: true })
   dateOfBirth: Date;
 
   @Column({ name: 'last_name' })

@@ -168,4 +168,15 @@ export class UsersService {
   async deleteAllPersonnel() {
     return this.personnelRepo.clear();
   }
+
+  // get all personnel with optional query params and pagination
+  async getAllPersonnel(query: any) {
+    const { page = 1, limit = 10, ...filters } = query;
+    const personnel = await this.personnelRepo.find({
+      take: limit,
+      skip: (page - 1) * limit,
+      where: { ...filters },
+    });
+    return personnel;
+  }
 }
