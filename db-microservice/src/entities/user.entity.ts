@@ -6,20 +6,54 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Facility } from './facility.entity';
+import { Appointment } from './appointment.entity';
+
+export enum MaritalStatus {
+  SINGLE = 'single',
+  MARRIED = 'married',
+  DIVORCED = 'divorced',
+  WIDOWED = 'widowed',
+  OTHER = 'other',
+}
 
 @Entity()
 export class User {
   @Column({ name: 'first_name' })
   firstName: string;
 
+  @Column({ default: true, type: 'boolean' })
+  active: boolean;
+
+  @Column({ nullable: true })
+  gender: string;
+
+  @Column({ name: 'date_of_birth' })
+  dateOfBirth: Date;
+
   @Column({ name: 'last_name' })
   lastName: string;
 
   @Column({ unique: true })
   email: string;
+
+  @Column({ nullable: true })
+  telecom: string;
+
+  @Column({ default: false, type: 'boolean' })
+  deceased: boolean;
+
+  @Column({ name: 'deceased_date', nullable: true })
+  deceasedDate: Date;
+
+  @Column({ type: 'jsonb', nullable: true })
+  communication: {
+    language: string;
+    preferred: boolean;
+  };
 
   @Column({ name: 'password_hash', nullable: true })
   passwordHash: string;
@@ -52,8 +86,11 @@ export class Patient extends User {
   @PrimaryGeneratedColumn('uuid', { name: 'patient_id' })
   patientId: string;
 
-  @Column({ name: 'date_of_birth' })
-  dateOfBirth: Date;
+  @OneToMany('Appointment', 'patient')
+  appointments: Appointment[];
+
+  @Column({ name: 'marital_status', type: 'enum', enum: MaritalStatus })
+  maritalStatus: MaritalStatus;
 }
 
 // enum for personnel type

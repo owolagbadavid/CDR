@@ -24,6 +24,13 @@ services:
     command: npm run start:dev
     env_file:
       - .env
+  facility_microservice:
+    build: ./facility-microservice
+    volumes:
+      - ./facility-microservice/src:/app/src
+    command: npm run start:dev
+    env_file:
+      - .env
   nats:
     image: nats
     ports:

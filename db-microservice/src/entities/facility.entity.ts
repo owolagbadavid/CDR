@@ -1,5 +1,12 @@
-import { Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Personnel } from './user.entity';
+import { Appointment } from './appointment.entity';
 
 export enum FacilityType {
   HOSPITAL = 'hospital',
@@ -14,6 +21,9 @@ export class Facility {
   @PrimaryGeneratedColumn({ name: 'facility_id' })
   facilityId: number;
 
+  @Column()
+  active: boolean;
+
   // hospital, clinic, pharmacy, lab, etc
   @Column({ type: 'enum', enum: FacilityType, default: FacilityType.OTHER })
   type: FacilityType;
@@ -21,6 +31,9 @@ export class Facility {
   // name of the facility
   @Column({ type: 'varchar', length: 100 })
   name: string;
+
+  @Column({ type: 'simple-array', default: [] })
+  alias: string[];
 
   // address of the facility
   @Column({ type: 'varchar', length: 200 })
@@ -42,7 +55,28 @@ export class Facility {
   @Column({ type: 'text' })
   description: string;
 
+  @ManyToOne('Facility', 'facilities')
+  partOf: Facility;
+
+  @JoinColumn({ name: 'part_of' })
+  partOfId: number;
+
+  @OneToMany('Facility', 'partOf')
+  facilities: Facility[];
+
   // personnel working in the facility
   @OneToMany('Personnel', 'facility')
   personnel: Personnel[];
+
+  @OneToMany('Appointment', 'facility')
+  appointments: Appointment[];
+
+  @Column({ type: 'simple-json', nullable: true })
+  qualification: {
+    name: string;
+    start: Date;
+    end: Date;
+    description: string;
+    issuer: string;
+  };
 }
