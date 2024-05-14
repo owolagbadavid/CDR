@@ -23,7 +23,7 @@ export class Facility {
   @PrimaryGeneratedColumn({ name: 'facility_id' })
   facilityId: number;
 
-  @Column()
+  @Column({ default: true })
   active: boolean;
 
   // hospital, clinic, pharmacy, lab, etc
@@ -58,9 +58,10 @@ export class Facility {
   description: string;
 
   @ManyToOne('Facility', 'facilities')
+  @JoinColumn({ name: 'part_of' })
   partOf: Facility;
 
-  @JoinColumn({ name: 'part_of' })
+  @Column({ name: 'part_of', nullable: true })
   partOfId: number;
 
   @OneToMany('Facility', 'partOf')

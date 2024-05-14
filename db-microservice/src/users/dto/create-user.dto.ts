@@ -10,4 +10,5 @@ export interface CreatePersonnelDto {
   lastName: string;
   email: string;
   password: string;
+  facilityId?: number;
 }

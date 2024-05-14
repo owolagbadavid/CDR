@@ -20,7 +20,7 @@ export class FacilitiesController {
 
   @MessagePattern('findOneFacility')
   findOne(@Payload() id: number) {
-    return this.facilitiesService.findOne(id);
+    return this.facilitiesService.findOneById(id);
   }
 
   // @MessagePattern('updateFacility')

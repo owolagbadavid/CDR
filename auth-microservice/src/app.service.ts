@@ -60,7 +60,7 @@ export class AppService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       passwordTokenExpiration,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      verificationToken,
+      //! verificationToken,
       ...rest
     }) => rest)(response.data);
 
@@ -74,19 +74,23 @@ export class AppService {
     );
 
     if (user) {
-      user = (({
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        passwordHash,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        passwordToken,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        passwordTokenExpiration,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        verificationToken,
-        ...rest
-      }) => rest)(user);
+      console.log(data.password, user.passwordHash);
+      if (!user.isVerified)
+        return { error: 'Account not verified', statusCode: 401 };
+
       if (bcrypt.compareSync(data.password, user.passwordHash)) {
         const token = await this.signToken(user.patientId, user.email);
+        user = (({
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          passwordHash,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          passwordToken,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          passwordTokenExpiration,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          verificationToken,
+          ...rest
+        }) => rest)(user);
         return {
           message: 'Login Successful',
           data: { user, token },

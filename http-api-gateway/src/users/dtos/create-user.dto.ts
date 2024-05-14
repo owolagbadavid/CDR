@@ -1,5 +1,12 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -26,4 +33,8 @@ export class CreatePersonnelDto extends CreateUserDto {
   @IsNotEmpty()
   @IsString()
   password: string;
+
+  @IsOptional()
+  @IsNumber()
+  facilityId?: number;
 }

@@ -47,4 +47,12 @@ export class UsersController {
   async deleteAllPersonnel() {
     return this.natsClient.send({ cmd: 'deleteAllPersonnel' }, {});
   }
+
+  @Get('patients')
+  async getAllPatients() {
+    const response = await lastValueFrom(
+      this.natsClient.send({ cmd: 'getAllPatients' }, {}),
+    );
+    return response;
+  }
 }

@@ -7,6 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Facility } from './facility.entity';
@@ -89,7 +90,12 @@ export class Patient extends User {
   @OneToMany('Appointment', 'patient')
   appointments: Appointment[];
 
-  @Column({ name: 'marital_status', type: 'enum', enum: MaritalStatus })
+  @Column({
+    name: 'marital_status',
+    type: 'enum',
+    enum: MaritalStatus,
+    default: MaritalStatus.OTHER,
+  })
   maritalStatus: MaritalStatus;
 }
 
@@ -108,11 +114,15 @@ export class Personnel extends User {
   personnelId: string;
 
   @ManyToOne('Facility', 'personnel')
+  @JoinColumn({ name: 'facility_id' })
   facility: Facility;
 
-  @JoinColumn({ name: 'facility_id' })
-  facilityId: string;
+  @Column({ name: 'facility_id', nullable: true })
+  facilityId: number;
 
   @Column({ type: 'enum', enum: PersonnelType, default: PersonnelType.OTHER })
   type: PersonnelType;
+
+  @ManyToMany('Appointment', 'personnel')
+  appointments: Appointment[];
 }

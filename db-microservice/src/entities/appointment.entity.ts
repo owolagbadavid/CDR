@@ -2,11 +2,13 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Facility } from './facility.entity';
-import { Patient } from './user.entity';
+import { Patient, Personnel } from './user.entity';
 
 export enum AppointmentStatus {
   PENDING = 'pending',
@@ -32,15 +34,17 @@ export class Appointment {
   description: string;
 
   @ManyToOne('Patient', 'appointments')
+  @JoinColumn({ name: 'patient_id' })
   patient: Patient;
 
   @ManyToOne('Facility', 'appointments')
+  @JoinColumn({ name: 'facility_id' })
   facility: Facility;
 
-  @JoinColumn({ name: 'facility_id' })
+  @Column({ name: 'facility_id' })
   facilityId: number;
 
-  @JoinColumn({ name: 'patient_id' })
+  @Column({ name: 'patient_id' })
   patientId: string;
 
   @Column({ name: 'appointment_date_time', default: new Date() })
@@ -54,14 +58,21 @@ export class Appointment {
   servicesReceived: string[];
 
   @ManyToOne('Appointment', 'previousAppointment')
+  @JoinColumn({ name: 'previous_appointment_id' })
   previousAppointment: Appointment;
 
-  @JoinColumn({ name: 'previous_appointment_id' })
+  @Column({ name: 'previous_appointment_id', nullable: true })
   previousAppointmentId: number;
 
-  @Column({ name: 'documentation', type: 'jsonb' })
+  // documentation i.e lab results, x-ray images, etc, array of objects with type and url
+  @Column({ type: 'jsonb', default: [] })
   documentation: {
     type: string;
     url: string;
-  };
+  }[];
+
+  // personnel i.e list of doctors, nurses, etc that can manage the appointment
+  @ManyToMany('Personnel', 'appointments', { cascade: true })
+  @JoinTable({})
+  personnel: Personnel[];
 }

@@ -66,4 +66,10 @@ export class UsersController {
     await this.usersService.deleteAllPersonnel();
     return { message: 'All personnel deleted successfully' };
   }
+
+  // get all patients
+  @MessagePattern({ cmd: 'getAllPatients' })
+  async getAllPatients() {
+    return this.usersService.getAllPatients();
+  }
 }

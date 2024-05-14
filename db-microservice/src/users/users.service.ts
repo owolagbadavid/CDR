@@ -4,12 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Patient, Personnel } from 'src/entities';
 import { Repository } from 'typeorm';
 import { randomBytes } from 'crypto';
+import { Facility } from 'src/entities/facility.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Patient) private patientRepo: Repository<Patient>,
     @InjectRepository(Personnel) private personnelRepo: Repository<Personnel>,
+    @InjectRepository(Facility) private facilityRepo: Repository<Facility>,
   ) {}
 
   async createPatient(createPatientDto: CreatePatientDto) {
@@ -43,6 +45,19 @@ export class UsersService {
     if (emailAlreadyExists.user) {
       return { error: 'Email already exists', statusCode: 409 };
     }
+
+    // check if facility exists
+
+    const facility = await this.facilityRepo.findOne({
+      where: {
+        facilityId: createPersonnelDto.facilityId,
+      },
+    });
+
+    if (!facility) {
+      return { error: 'Facility does not exist', statusCode: 404 };
+    }
+
     const isVerified = true;
     const verified = new Date();
 
@@ -178,5 +193,27 @@ export class UsersService {
       where: { ...filters },
     });
     return personnel;
+  }
+
+  // get all patients with optional query params and pagination
+  async getAllPatients(query?: any) {
+    try {
+      const page = 1,
+        limit = 10;
+      console.log(page);
+
+      const patients = await this.patientRepo.find({
+        take: limit,
+        skip: (page - 1) * limit,
+      });
+
+      return {
+        message: 'Patients retrieved successfully',
+        data: patients,
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

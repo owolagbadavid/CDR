@@ -25,6 +25,7 @@ export class FacilitiesService {
     }
 
     const facility = this.facilityRepo.create(createFacilityDto);
+    console.log(facility);
     await this.facilityRepo.save(facility);
 
     return {
@@ -44,7 +45,7 @@ export class FacilitiesService {
     };
   }
 
-  async findOne(id: number) {
+  async findOneById(id: number) {
     const facility = await this.facilityRepo.findOneBy({ facilityId: id });
 
     if (!facility) {
@@ -88,6 +89,14 @@ export class FacilitiesService {
       facilityId,
       ...filter,
     };
-    return this.usersService.getAllPersonnel(query);
+    const staff = this.usersService.getAllPersonnel(query);
+
+    // todo remove password from staff
+
+    return {
+      statusCode: 200,
+      message: 'Staff retrieved successfully',
+      data: staff,
+    };
   }
 }
