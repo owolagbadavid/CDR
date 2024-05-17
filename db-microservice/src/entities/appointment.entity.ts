@@ -73,6 +73,10 @@ export class Appointment {
 
   // personnel i.e list of doctors, nurses, etc that can manage the appointment
   @ManyToMany('Personnel', 'appointments', { cascade: true })
-  @JoinTable({})
+  @JoinTable({
+    name: 'appointment_personnel',
+    joinColumn: { name: 'appointment_id' },
+    inverseJoinColumn: { name: 'personnel_id' },
+  })
   personnel: Personnel[];
 }
