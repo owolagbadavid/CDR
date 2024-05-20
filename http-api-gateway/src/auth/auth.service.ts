@@ -18,4 +18,17 @@ export class AuthService {
 
     return reponse;
   }
+
+  // forgot password
+  async forgotPassword(email: string) {
+    const response = await lastValueFrom(
+      this.natsClient.send({ cmd: 'forgotPassword' }, email),
+    );
+
+    if (response.error) {
+      throw new HttpException(response.error, response.statusCode);
+    }
+
+    return response;
+  }
 }

@@ -58,4 +58,19 @@ export class AppService {
   async updateAppointment(data: any) {
     return this.natsClient.send('updateAppointment', data);
   }
+
+  async getOneAppointment(appointmentId: number) {
+    return this.natsClient.send('getOneAppointment', appointmentId);
+  }
+
+  async getAllAppointments(filterDto: any) {
+    console.log(filterDto);
+
+    return this.natsClient.send('getAllAppointment', filterDto.facilityId);
+  }
+
+  // get patient appointments
+  async getPatientAppointments(patientId: number) {
+    return this.natsClient.send('getPatientAppointments', patientId);
+  }
 }

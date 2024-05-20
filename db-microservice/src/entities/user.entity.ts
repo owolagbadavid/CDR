@@ -21,6 +21,12 @@ export enum MaritalStatus {
   OTHER = 'other',
 }
 
+export enum Gender {
+  MALE = 'M',
+  FEMALE = 'F',
+  OTHER = 'O',
+}
+
 @Entity()
 export class User {
   @Column({ name: 'first_name' })
@@ -29,7 +35,7 @@ export class User {
   @Column({ default: true, type: 'boolean' })
   active: boolean;
 
-  @Column({ nullable: true })
+  @Column({ type: 'enum', enum: Gender, default: Gender.OTHER })
   gender: string;
 
   @Column({ name: 'date_of_birth', nullable: true })

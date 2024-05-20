@@ -38,4 +38,9 @@ export class AppController {
   resetPassword(@Payload() data: any) {
     return this.appService.resetPassword(data);
   }
+
+  @MessagePattern({ cmd: 'forgotPassword' })
+  forgotPassword(@Payload() email: string) {
+    return this.appService.forgotPassword(email);
+  }
 }

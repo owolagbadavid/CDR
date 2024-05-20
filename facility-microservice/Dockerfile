@@ -1,5 +1,6 @@
 # Stage 1
-FROM node:18.17-bookworm-slim as base
+FROM node:18.17-alpine as base
+
 
 
 WORKDIR /app

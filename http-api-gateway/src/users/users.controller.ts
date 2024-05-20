@@ -55,4 +55,15 @@ export class UsersController {
     );
     return response;
   }
+
+  // get patient appointments
+  @Get('patients/:id/appointments')
+  async getPatientAppointments(@Param('id') id: string) {
+    const response = await lastValueFrom(
+      this.natsClient.send({ cmd: 'getPatientAppointments' }, id),
+    );
+
+    if (response.error) throw new HttpException(response, response.statusCode);
+    return response;
+  }
 }

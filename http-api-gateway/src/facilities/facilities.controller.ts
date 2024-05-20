@@ -13,6 +13,7 @@ import {
   ParseFilePipe,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -21,7 +22,7 @@ import { ClientProxy } from '@nestjs/microservices';
 
 import { lastValueFrom } from 'rxjs';
 import { CreateFacilityDto } from './dtos/create-facility.dto';
-import { AppointmentDto } from './dtos/appointment.dto';
+import { AppointmentDto, AppointmentFilterDto } from './dtos/appointment.dto';
 import { GetUser } from 'src/decorators/get-user.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -125,10 +126,62 @@ export class FacilitiesController {
     return response;
   }
 
+  @Get(':id/appointments')
+  async getAllAppointments(
+    @Query() filterDto: AppointmentFilterDto,
+    @Param('id') facilitySub,
+  ) {
+    let response;
+
+    if (filterDto && Object.keys(filterDto).length > 0) {
+      const { facilityId, ...filter } = filterDto;
+
+      response = await lastValueFrom(
+        this.natsClient.send('getAllAppointments', { facilityId, ...filter }),
+      );
+    } else {
+      try {
+        response = await lastValueFrom(
+          this.natsClient.send(
+            'getAllAppointments',
+
+            { facilityId: facilitySub },
+          ),
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    if (response.error) {
+      throw new HttpException(response, response.statusCode);
+    }
+
+    return response;
+  }
+
+  @Get(':id/appointments/:appointmentId')
+  async getAppointmentById(@Param('appointmentId') appointmentId: number) {
+    const response = await lastValueFrom(
+      this.natsClient.send(
+        {
+          cmd: 'getOneAppointment',
+        },
+        appointmentId,
+      ),
+    );
+
+    if (response.error) {
+      throw new HttpException(response, response.statusCode);
+    }
+
+    return response;
+  }
+
   // addPersonnelToAppointment
   @Post(':id/appointments/:appointmentId/personnel')
   async addPersonnelToAppointment(
-    @Param('id') appointmentId: string,
+    @Param('appointmentId') appointmentId: string,
     @Body('personnelId') personnelId: string,
   ) {
     const response = await lastValueFrom(
@@ -148,7 +201,7 @@ export class FacilitiesController {
   // removePersonnelFromAppointment
   @Delete(':id/appointments/:appointmentId/personnel')
   async removePersonnelFromAppointment(
-    @Param('id') appointmentId: string,
+    @Param('appointmentId') appointmentId: string,
     @Body('personnelId') personnelId: string,
   ) {
     const response = await lastValueFrom(
@@ -168,7 +221,7 @@ export class FacilitiesController {
   // updateAppointment
   @Patch(':id/appointments/:appointmentId')
   async updateAppointment(
-    @Param('id') appointmentId: string,
+    @Param('appointmentId') appointmentId: string,
     @Body() updateAppointmentDto: AppointmentDto,
   ) {
     const response = await lastValueFrom(
@@ -188,7 +241,7 @@ export class FacilitiesController {
   // updateAppointmentStatus
   @Patch(':id/appointments/:appointmentId/status')
   async updateAppointmentStatus(
-    @Param('id') appointmentId: string,
+    @Param('appointmentId') appointmentId: string,
     @Body('status') status: string,
   ) {
     const response = await lastValueFrom(

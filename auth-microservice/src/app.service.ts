@@ -214,4 +214,40 @@ export class AppService {
       message: 'Password successfully updated',
     };
   }
+
+  async forgotPassword(email: string) {
+    const user = await lastValueFrom(
+      this.natsClient.send({ cmd: 'findUserByEmail' }, email),
+    );
+
+    if (!user) {
+      return {
+        statusCode: 404,
+        error: 'User not found',
+      };
+    }
+
+    const currentDate = new Date();
+    const token = createHash('md5')
+      .update(currentDate.toString())
+      .digest('hex');
+
+    user.passwordToken = token;
+    user.passwordTokenExpiration = new Date(currentDate.getTime() + 600000);
+
+    const response = await lastValueFrom(
+      this.natsClient.send({ cmd: 'updateUser' }, user),
+    );
+
+    if (response.error) {
+      return response;
+    }
+
+    // todo: send email to user
+
+    return {
+      statusCode: 200,
+      message: 'Password reset token sent',
+    };
+  }
 }

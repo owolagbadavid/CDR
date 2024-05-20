@@ -74,4 +74,41 @@ export class AppointmentsController {
       data: appointment,
     };
   }
+
+  @MessagePattern('getOneAppointment')
+  async getOneAppointment(@Payload() appointmentId: number) {
+    const appointment =
+      await this.appointmentsService.getOneAppointment(appointmentId);
+
+    if (appointment)
+      return {
+        message: 'Appointment Found Successfully',
+        data: appointment,
+        statusCode: 200,
+      };
+
+    return {
+      error: 'Appointment Not Found',
+      statusCode: 404,
+    };
+  }
+
+  @MessagePattern('getAllAppointments')
+  async getAllAppointments(@Payload() filterDto: any) {
+    console.log('herefff');
+
+    const appointments =
+      await this.appointmentsService.getAllAppointments(filterDto);
+
+    return {
+      message: 'Appointments Found Succesfully',
+      statusCode: 200,
+      data: appointments,
+    };
+  }
+
+  @MessagePattern('getPatientAppointments')
+  async getPatientAppointments(@Payload() patientId: string) {
+    return this.appointmentsService.getPatientAppointments(patientId);
+  }
 }

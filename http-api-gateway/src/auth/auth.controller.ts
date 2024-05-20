@@ -148,4 +148,10 @@ export class AuthController {
   resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
   }
+
+  // forgot password
+  @Post('forgotPassword')
+  forgotPassword(@Body() email: string) {
+    return this.authService.forgotPassword(email);
+  }
 }

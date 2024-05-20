@@ -79,4 +79,21 @@ export class AppController {
   updateAppointment(@Payload() data) {
     return this.appService.updateAppointment(data);
   }
+
+  @MessagePattern({ cmd: 'getOneAppointment' })
+  getOneAppointment(@Payload() appointmentId: number) {
+    return this.appService.getOneAppointment(appointmentId);
+  }
+
+  @MessagePattern({ cmd: 'getAllAppointments' })
+  getAllAppointments(@Payload() filterDto: any) {
+    console.log(filterDto, 'in controller');
+    this.appService.getAllAppointments(filterDto);
+  }
+
+  // get patient appointments
+  @MessagePattern({ cmd: 'getPatientAppointments' })
+  getPatientAppointments(@Payload() patientId: number) {
+    return this.appService.getPatientAppointments(patientId);
+  }
 }

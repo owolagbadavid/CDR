@@ -53,7 +53,7 @@ export class Appointment {
   @Column({
     name: 'services_received',
     type: 'simple-array',
-    default: ['check-up'],
+    default: [],
   })
   servicesReceived: string[];
 

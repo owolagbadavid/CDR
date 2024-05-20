@@ -87,6 +87,19 @@ export class AppointmentsService {
       });
 
       const response = await this.usersService.findUserById(personnelId);
+
+      // find if personnel is already in the appointment
+      const personnel = appointment.personnel.find(
+        (person) => person.personnelId === personnelId,
+      );
+
+      if (personnel) {
+        return {
+          statusCode: 422,
+          error: 'Personnel already in appointment',
+        };
+      }
+
       appointment.personnel.push(response.user as Personnel);
 
       await this.appointmentRepo.save(appointment);
@@ -158,5 +171,35 @@ export class AppointmentsService {
     // requestUser: any,
   ) {
     return this.appointmentRepo.update(appointmentId, updateAppointmentDto);
+  }
+
+  async getOneAppointment(appointmentId: number) {
+    return this.appointmentRepo.findOneBy({ appointmentId });
+  }
+
+  async getAllAppointments(filterDto: any) {
+    console.log('mike is here');
+
+    return this.appointmentRepo.findBy({ ...filterDto });
+  }
+
+  async getPatientAppointments(patientId: string) {
+    // check if patient exists
+    const patient = await this.usersService.findUserById(patientId);
+
+    if (!patient.user) {
+      return {
+        statusCode: 404,
+        error: 'Patient not found',
+      };
+    }
+
+    const appointments = await this.appointmentRepo.findBy({ patientId });
+
+    return {
+      statusCode: 200,
+      data: appointments,
+      message: 'Patient Appointments found successfully',
+    };
   }
 }
