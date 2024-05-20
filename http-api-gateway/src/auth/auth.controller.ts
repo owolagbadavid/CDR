@@ -22,9 +22,11 @@ import { Response } from 'express';
 import { AuthGuard } from './guards/auth.guard';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AuthService } from './auth.service';
+import { ApiTags } from '@nestjs/swagger';
 
 // import { lastValueFrom } from 'rxjs';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(

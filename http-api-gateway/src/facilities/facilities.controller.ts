@@ -31,6 +31,7 @@ import { v2 as cloudinary } from 'cloudinary';
 
 import * as fs from 'node:fs/promises';
 import * as path from 'path';
+import { ApiTags } from '@nestjs/swagger';
 
 cloudinary.config({
   cloud_name: 'dfpby8w8f',
@@ -40,6 +41,7 @@ cloudinary.config({
 
 //   import { lastValueFrom } from 'rxjs';
 
+@ApiTags('Facilities/Staff/Appointments')
 @Controller('facilities')
 export class FacilitiesController {
   constructor(@Inject('NATS_SERVICE') private natsClient: ClientProxy) {}

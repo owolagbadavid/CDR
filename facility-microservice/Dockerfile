@@ -2,7 +2,6 @@
 FROM node:18.17-alpine as base
 
 
-
 WORKDIR /app
 
 COPY package.json ./
