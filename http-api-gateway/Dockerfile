@@ -18,3 +18,5 @@ COPY . .
 # COPY --from=base /app /app
 
 # USER nonroot
+
+CMD ["./start.sh"]

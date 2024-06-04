@@ -5,7 +5,7 @@ services:
       - "3000:3000"
     volumes:
       - ./http-api-gateway/src:/app/src
-    command: npm run start:dev
+
     environment:
       - PORT=3000
     env_file:
@@ -14,21 +14,21 @@ services:
     build: ./db-microservice
     volumes:
       - ./db-microservice/src:/app/src
-    command: npm run start:dev
+
     env_file:
       - .env
   auth_microservice:
     build: ./auth-microservice
     volumes:
       - ./auth-microservice/src:/app/src
-    command: npm run start:dev
+
     env_file:
       - .env
   facility_microservice:
     build: ./facility-microservice
     volumes:
       - ./facility-microservice/src:/app/src
-    command: npm run start:dev
+
     env_file:
       - .env
   nats:

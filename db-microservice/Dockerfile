@@ -11,6 +11,8 @@ RUN npm install
 
 COPY . .
 
+# Todo: For Production Deployment
+
 # Stage 2
 # FROM gcr.io/distroless/nodejs18-debian11
 
@@ -18,3 +20,9 @@ COPY . .
 # COPY --from=base /app /app
 
 # USER nonroot
+
+CMD ["./start.sh"]
+
+
+
+

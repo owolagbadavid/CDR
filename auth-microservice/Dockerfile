@@ -18,3 +18,6 @@ COPY . .
 # COPY --from=base . .
 
 # USER nonroot
+
+CMD "./start.sh"
+
