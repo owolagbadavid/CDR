@@ -50,6 +50,11 @@ export class UsersController {
     return this.natsClient.send({ cmd: 'deleteAllPersonnel' }, {});
   }
 
+  @Delete('all')
+  async deleteAll() {
+    return this.natsClient.send('deleteAllColumns', {});
+  }
+
   @Get('patients')
   async getAllPatients() {
     const response = await lastValueFrom(

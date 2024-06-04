@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from 'src/db/data-source';
 import { FacilitiesModule } from './facilities/facilities.module';
 import { AppointmentsModule } from './appointments/appointments.module';
+import { Patient, Personnel, Facility, Appointment } from './entities';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AppointmentsModule } from './appointments/appointments.module';
     UsersModule,
     FacilitiesModule,
     AppointmentsModule,
+    TypeOrmModule.forFeature([Patient, Personnel, Facility, Appointment]),
   ],
   controllers: [AppController],
   providers: [AppService],

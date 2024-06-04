@@ -84,12 +84,14 @@ export class FacilitiesService {
     };
   }
 
-  getAllStaff(facilityId: number, filter) {
+  async getAllStaff(facilityId: number, filter) {
     const query = {
       facilityId,
       ...filter,
     };
-    const staff = this.usersService.getAllPersonnel(query);
+
+    const staff = await this.usersService.getAllPersonnel(query);
+    console.log(staff, 'staff');
 
     // todo remove password from staff
 

@@ -48,7 +48,7 @@ export class AppController {
 
   // Staff
 
-  @MessagePattern({ cmd: 'createStaff' })
+  @MessagePattern({ cmd: 'getAllStaff' })
   getAllStaff(@Payload() data) {
     return this.appService.getAllStaff(data.facilityId, data.filter);
   }

@@ -160,10 +160,10 @@ export class AppService {
     const { token, email } = resetPasswordDto;
     let { password } = resetPasswordDto;
 
-    const data = await lastValueFrom(
+    response = await lastValueFrom(
       this.natsClient.send({ cmd: 'findUserByEmail' }, email),
     );
-    const user: Patient | Personnel = data.user;
+    const user: Patient | Personnel = response.user;
 
     // const user1 = JSON.parse(`${user}`);
 

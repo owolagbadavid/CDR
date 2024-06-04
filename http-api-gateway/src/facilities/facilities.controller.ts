@@ -97,6 +97,8 @@ export class FacilitiesController {
       this.natsClient.send({ cmd: 'getAllStaff' }, { facilityId: id }),
     );
 
+    console.log(response);
+
     if (response.error) {
       throw new HttpException(response, response.statusCode);
     }
