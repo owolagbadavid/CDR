@@ -177,11 +177,13 @@ export class UsersService {
   }
 
   async deleteAllPatients() {
-    return this.patientRepo.clear();
+    // dont use clear() method to delete all records
+    return this.patientRepo.delete({});
   }
 
   async deleteAllPersonnel() {
-    return this.personnelRepo.clear();
+    // dont use clear() method to delete all records
+    return this.personnelRepo.delete({});
   }
 
   // get all personnel with optional query params and pagination
